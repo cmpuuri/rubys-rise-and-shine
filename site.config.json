@@ -1,0 +1,30 @@
+{
+  "businessName": "Ruby's Rise & Shine",
+  "tagline": "A little rise, a lot of love.",
+  "city": "Poway, CA",
+  "domain": "rubysriseandshine.com",
+  "price": 10,
+  "panSize": "8x8",
+  "serves": "4 to 6",
+  "flavors": [
+    { "id": "plain", "name": "Plain", "desc": "The original. Organic unbleached flour, reverse osmosis water, unrefined mineral salt, cold-pressed extra virgin olive oil, and a long sourdough rise. Finished with Maldon flakes. Crisp bottom, pillowy middle." },
+    { "id": "garlic", "name": "Garlic", "desc": "Same dough and the same good ingredients, plus roasted garlic and fresh rosemary pressed into the dimples. The one people ask for twice." }
+  ],
+  "comingSoon": [ { "name": "Keychains", "note": "Handmade by Ruby for teammates. Phase 2." } ],
+  "ingredients": [
+    { "name": "Organic unbleached flour", "note": "No bleach, no bromate. Just wheat." },
+    { "name": "Filtered reverse osmosis water", "note": "Clean water makes a cleaner rise." },
+    { "name": "Two sea salts", "note": "Redmond unrefined mineral salt in the dough, Maldon flakes on top." },
+    { "name": "Premium cold-pressed extra virgin olive oil", "note": "Generous on the pan and on the crust." }
+  ],
+  "ingredientsNote": "Plus a sourdough starter we've kept alive for a long time, and for the garlic pan, roasted garlic and fresh rosemary. No yeast packets, no preservatives.",
+  "bakeDays": [3, 5],
+  "bakeDaysToShow": 6,
+  "maxPansPerOrder": 4,
+  "pansPerBake": 4,
+  "venmoHandle": "@rubys-rise-and-shine",
+  "orderPhone": "",
+  "orderEndpoint": "https://api.web3forms.com/submit",
+  "orderAccessKey": "PLACEHOLDER",
+  "dropoffOptions": ["Softball field (before or after the game)", "My house (I'll add my address in notes)"]
+}
