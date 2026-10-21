@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruby's Rise &amp; Shine | Sourdough focaccia in Poway</title>
+<meta name="description" content="Hand-stretched sourdough focaccia pans, baked to order by Ruby, age 10, in Poway, CA. Order online and pay by Venmo at pickup.">
+<meta name="theme-color" content="#F6EDD8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1E2213" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://rubysriseandshine.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ruby's Rise &amp; Shine">
+<meta property="og:title" content="Ruby's Rise &amp; Shine | Sourdough focaccia in Poway">
+<meta property="og:description" content="Hand-stretched sourdough focaccia pans, baked to order by Ruby, age 10, in Poway, CA.">
+<meta property="og:url" content="https://rubysriseandshine.com/">
+<meta property="og:image" content="https://rubysriseandshine.com/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ruby's Rise &amp; Shine logo on a cream background. A little rise, a lot of love.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ruby's Rise &amp; Shine | Sourdough focaccia in Poway">
+<meta name="twitter:description" content="Hand-stretched sourdough focaccia pans, baked to order by Ruby, age 10, in Poway, CA.">
+<meta name="twitter:image" content="https://rubysriseandshine.com/img/og-image.png">
+
+<link rel="icon" href="/img/favicon.ico" sizes="any">
+<link rel="icon" href="/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+
+<link rel="preload" href="/site.config.json" as="fetch" crossorigin>
+<link rel="preload" href="/img/logo.webp" as="image" imagesrcset="/img/logo.webp 1x, /img/logo@2x.webp 2x">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dancing+Script:wght@600;700&family=Nunito:ital,wght@0,400;0,600;0,800;1,400&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/site.js" defer></script>
+</head>
+<body>
+<!-- Words and numbers that change often (prices, flavors, bake days, Venmo) live in site.config.json, not here. -->
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Ruby's Rise &amp; Shine home"><img src="/img/logo.webp" srcset="/img/logo.webp 1x, /img/logo@2x.webp 2x" width="44" height="44" alt=""><span data-cfg="businessName">Ruby's Rise &amp; Shine</span></a>
+    <nav aria-label="Site">
+      <a href="#menu">Menu</a>
+      <a href="#how">How it works</a>
+      <a href="#about">About Ruby</a>
+      <a class="cta" href="#order">Order a pan</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Baked in <span data-cfg="town">Poway</span></div>
+      <h1>Sourdough focaccia,<br>made with <em>a lot of love.</em></h1>
+      <p>Hand-stretched <span data-cfg="panSize"></span> pans of slow-risen sourdough focaccia, baked to order by Ruby, age 10, and her mom. Order online, pay by Venmo at pickup.</p>
+      <div class="row">
+        <a class="btn gold" href="#order">Order a pan</a>
+        <a class="btn ghost" href="#menu">See the menu</a>
+      </div>
+      <div class="pills" id="pills"></div>
+    </div>
+    <img class="hero-logo" src="/img/logo.webp" srcset="/img/logo.webp 1x, /img/logo@2x.webp 2x" width="380" height="380" fetchpriority="high" alt="Ruby's Rise &amp; Shine logo: a sun rising over a loaf of bread. A little rise, a lot of love.">
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="sec-head"><h2>The Menu</h2><span class="script">small, on purpose</span></div>
+    <div class="pans" id="pans"></div>
+    <div class="ingredients">
+      <div class="ing-head"><span class="script">What goes in</span><h3>Four ingredients. All good ones.</h3></div>
+      <ul id="ingredients"></ul>
+      <p data-cfg="ingredientsNote"></p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head"><h2>How It Works</h2><span class="script">three easy steps</span></div>
+    <div class="steps">
+      <div class="step"><h3>Order online</h3><p>Pick your flavor and how many pans. Ruby bakes <span data-cfg="bakeDaysLong"></span>, so choose the bake day that works for you.</p></div>
+      <div class="step"><h3>Ruby bakes it</h3><p>Dough gets mixed the day before, rises overnight, and goes in the oven the morning of your pickup.</p></div>
+      <div class="step"><h3>Pick up or dropoff</h3><p>Grab it at our house, or Ruby brings it to the softball field or your door. Pay by Venmo when you get your pan.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="order" id="order">
+  <div class="wrap">
+    <div class="sec-head"><h2>Order a Pan</h2><span class="script">Ruby reads every order</span></div>
+    <noscript><p class="notice">The order form needs JavaScript. Turn it on, or text Ruby your order.</p></noscript>
+    <div class="order-grid">
+      <form class="card" id="orderForm" action="#order" method="post" novalidate>
+        <fieldset class="field">
+          <legend class="lbl-legend">Flavor</legend>
+          <div class="choice" id="flavorChoices"></div>
+        </fieldset>
+        <div class="two">
+          <div class="field">
+            <label id="qtyLabel" for="qtyOut">How many pans</label>
+            <div class="qty" role="group" aria-labelledby="qtyLabel">
+              <button type="button" id="qtyMinus" aria-label="One fewer pan">&minus;</button>
+              <output id="qtyOut" for="qtyMinus qtyPlus" aria-live="polite">1</output>
+              <button type="button" id="qtyPlus" aria-label="One more pan">+</button>
+            </div>
+            <p class="hint">Up to <span data-cfg="maxPansPerOrder"></span> per order while Ruby's oven is small.</p>
+          </div>
+          <div class="field">
+            <label for="bakeDay">Bake day</label>
+            <select id="bakeDay" name="bakeDay"></select>
+            <p class="hint">Orders close the night before.</p>
+          </div>
+        </div>
+        <fieldset class="field">
+          <legend class="lbl-legend">Get it by</legend>
+          <div class="choice">
+            <input type="radio" name="method" id="m-pickup" value="Pickup" checked><label for="m-pickup">Pickup <small>At our house in <span data-cfg="town">Poway</span></small></label>
+            <input type="radio" name="method" id="m-drop" value="Dropoff"><label for="m-drop">Dropoff <small>Softball field or your house</small></label>
+          </div>
+        </fieldset>
+        <div class="field" id="dropWhere" hidden>
+          <label for="dropLoc">Where should Ruby drop it off?</label>
+          <select id="dropLoc" name="dropLoc"></select>
+        </div>
+        <div class="two">
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" autocomplete="name" placeholder="Jess M." required aria-describedby="nameErr">
+            <p class="err" id="nameErr" hidden></p>
+          </div>
+          <div class="field">
+            <label for="phone">Phone (for a text when it's ready)</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="858 555 0100" required aria-describedby="phoneErr">
+            <p class="err" id="phoneErr" hidden></p>
+          </div>
+        </div>
+        <div class="field"><label for="notes">Notes or address</label><textarea id="notes" name="notes" placeholder="Extra crispy, please. Or your address for a dropoff."></textarea></div>
+        <!-- Spam trap: people never see or fill this. Bots often do. -->
+        <div class="hp" aria-hidden="true"><label for="botcheck">Leave this empty</label><input type="checkbox" id="botcheck" name="botcheck" tabindex="-1" autocomplete="off"></div>
+        <p class="err" id="formErr" role="alert" hidden></p>
+        <div class="fallback" id="fallback" hidden>
+          <p>Your order is safe. Text this ticket to Ruby instead:</p>
+          <div class="ticket" id="fallbackTicket"></div>
+          <div class="row">
+            <a class="btn ghost" id="fallbackSms" href="#">Text it to Ruby</a>
+            <button class="btn ghost" type="button" id="fallbackCopy">Copy order ticket</button>
+          </div>
+        </div>
+        <div class="total"><span>Total, paid by Venmo at handoff</span><strong id="total" aria-live="polite">$10</strong></div>
+        <button class="btn gold" type="submit" id="submitBtn" disabled>Place my order</button>
+      </form>
+
+      <div class="side" id="sideInfo">
+        <div class="box"><h3>Pay with Venmo</h3><p>No card needed here. Ruby confirms your order by text, and you Venmo her when you get your pan.</p><div class="venmo" data-cfg="venmoHandle"></div></div>
+        <div class="box"><h3>Bake days</h3><p>Ruby bakes <span data-cfg="bakeDaysLong"></span> and can make up to <span data-cfg="pansPerBake"></span> pans per bake, so spots are first come, first served. If a day is full, Ruby will text you.</p></div>
+        <div class="box"><h3>Softball families</h3><p>Friday pans are fresh for weekend games. Order by Thursday night and Ruby will bring it to the field. Look for the girl with the cooler bag.</p></div>
+      </div>
+
+      <div class="confirm" id="confirm" hidden tabindex="-1">
+        <span class="badge">Order received</span>
+        <h3>Thanks, you're on the list!</h3>
+        <p class="lead">Here's your order ticket. Ruby will text you to confirm. Copy it and send it to her so she has it in writing.</p>
+        <div class="ticket" id="ticket"></div>
+        <div class="row">
+          <button class="btn" type="button" id="copyBtn">Copy order ticket</button>
+          <a class="btn ghost" id="smsBtn" href="#">Text it to Ruby</a>
+          <button class="btn ghost" type="button" id="againBtn">Order another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap">
+    <div>
+      <div class="sec-head"><h2>About Ruby</h2></div>
+      <div class="quote">"I started because people kept asking for more."</div>
+      <p>Ruby is 10. She pitches for her softball team and has been making sourdough focaccia with her mom since she was tall enough to reach the counter. Every time it came out at a get-together, someone asked when they could get their own pan.</p>
+      <p>So she's selling it. Ruby takes the orders, talks to customers, and keeps the money she earns. Her parents work for her.</p>
+      <div class="team">
+        <div><span class="who">Ruby</span><span class="what"><b>Owner.</b> Orders, customers, quality control, and the money.</span></div>
+        <div><span class="who">Mom</span><span class="what"><b>Head of oven.</b> Dough, timing, and making sure nothing burns.</span></div>
+        <div><span class="who">Dad</span><span class="what"><b>Website guy.</b> This page, the QR code, and deliveries when asked nicely.</span></div>
+      </div>
+    </div>
+    <div class="visual"><img src="/img/logo.webp" srcset="/img/logo.webp 1x, /img/logo@2x.webp 2x" width="360" height="360" loading="lazy" alt=""></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="tag" data-cfg="tagline">A little rise, a lot of love.</span>
+    <span><span data-cfg="businessName">Ruby's Rise &amp; Shine</span> &middot; <span data-cfg="city">Poway, CA</span> &middot; <span data-cfg="domain">rubysriseandshine.com</span></span>
+  </div>
+</footer>
+</body>
+</html>
