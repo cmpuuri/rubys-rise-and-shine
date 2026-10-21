@@ -14,6 +14,10 @@
   var cfg, qty = 1, loadedAt = Date.now(), sending = false;
   var $ = function(id){ return document.getElementById(id); };
 
+  // Google Fonts start as media="print" so they never block the first paint. Switch them on here.
+  var fonts = $('fonts');
+  if (fonts) { if (fonts.sheet) fonts.media = 'all'; else fonts.addEventListener('load', function(){ fonts.media = 'all'; }); }
+
   function el(tag, cls, text){
     var e = document.createElement(tag);
     if (cls) e.className = cls;

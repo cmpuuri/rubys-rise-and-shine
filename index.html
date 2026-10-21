@@ -31,7 +31,9 @@
 <link rel="preload" href="/img/logo.webp" as="image" imagesrcset="/img/logo.webp 1x, /img/logo@2x.webp 2x">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dancing+Script:wght@600;700&family=Nunito:ital,wght@0,400;0,600;0,800;1,400&display=swap">
+<!-- Fonts load without blocking the first paint; site.js switches media to "all". -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Dancing+Script:wght@600;700&amp;family=Nunito:ital,wght@0,400;0,600;0,800;1,400&amp;display=swap" media="print" id="fonts">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Dancing+Script:wght@600;700&amp;family=Nunito:ital,wght@0,400;0,600;0,800;1,400&amp;display=swap"></noscript>
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/site.js" defer></script>
 </head>
