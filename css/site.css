@@ -195,3 +195,15 @@ fieldset.field{border:0;margin:0;padding:0}
 [hidden]{display:none!important}
 section{scroll-margin-top:72px}
 .confirm{scroll-margin-top:84px}
+@media (max-width:420px){ .brand span{font-size:1.25rem} nav a.cta{white-space:nowrap} }
+/* AA contrast. The brand tokens above are unchanged. Crust (#C8863C) is too light for text on cream,
+   so text that uses it gets a slightly deeper shade in the light theme only. */
+:root{--crust-text:#B07030;--ok:#4A6524}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--crust-text:var(--crust);--ok:#A9C86E} }
+:root[data-theme="dark"]{--crust-text:var(--crust);--ok:#A9C86E}
+.eyebrow,.hero h1 em,.sec-head .script,.price,.total strong,.confirm h3,.quote{color:var(--crust-text)}
+.ing-head .script{color:var(--crust-deep)}
+.order .sec-head .script{color:var(--gold)}
+.side .box{background:rgba(0,0,0,.12)}
+.pan.soon{opacity:1;background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
+.price.soon-label{color:var(--ink-soft)}
