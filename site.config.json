@@ -26,5 +26,6 @@
   "orderPhone": "",
   "orderEndpoint": "https://api.web3forms.com/submit",
   "orderAccessKey": "dc5a3744-996a-406d-9a61-358607bf4277",
+  "ordersSheetUrl": "",
   "dropoffOptions": ["Softball field (before or after the game)", "My house (I'll add my address in notes)"]
 }

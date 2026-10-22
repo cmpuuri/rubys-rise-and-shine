@@ -23,12 +23,13 @@ Everything that changes often lives in one file: **`site.config.json`**.
 | How many dates the form shows | `"bakeDaysToShow": 6` | |
 | Price of a pan | `"price": 10` | Just the number, no `$`. |
 | Most pans in one order | `"maxPansPerOrder": 4` | |
-| Pans per bake (shown in the "Bake days" box) | `"pansPerBake": 4` | |
+| Pans per bake (the most Ruby bakes in one day) | `"pansPerBake": 4` | With the order sheet on, a day closes when its orders add up to this number. |
 | Venmo handle | `"venmoHandle": "@rubys-rise-and-shine"` | Keep the quote marks. |
 | A flavor's description | the `"desc"` text inside `"flavors"` | |
 | Add a flavor | copy one `{ "id": ..., "name": ..., "desc": ... }` block inside `"flavors"` | Put a comma between blocks. The `id` is a short lowercase word, like `"cheese"`. |
 | The "Coming soon" card | `"comingSoon"` | To hide the card, change it to `"comingSoon": []`. |
 | Dropoff choices | `"dropoffOptions"` | |
+| The order sheet link | `"ordersSheetUrl": ""` | See "Order sheet" below. Empty means the sheet is off and every day stays open. |
 | A phone number for the "Text it to Ruby" button | `"orderPhone": ""` | Empty by default, so no number appears on the site. If you add one, it is public. |
 
 **Be careful with punctuation.** Every value needs its quote marks and the commas between lines. If the site shows "The order form could not load" after an edit, there is a typo. Open the file on GitHub, click **History**, and compare with the last version that worked. You can also paste the file into https://jsonlint.com to find the mistake.
@@ -69,6 +70,49 @@ The access key is public by design. It only lets people send email *to* you, so 
 If the key is missing or says `PLACEHOLDER`, the form says online ordering is not switched on and offers the text-message option instead.
 
 The free Web3Forms plan allows 250 orders a month.
+
+---
+
+## Order sheet (spaces out orders and closes full days)
+
+Every order is saved as a row in a private Google Sheet. The website reads the sheet to see how many pans are already booked for each bake day. When a day reaches `pansPerBake` (4 now), the order form shows it as **(full)** and nobody can pick it. If a day has only 1 or 2 pans left, the form says so and will not let anyone order more than that.
+
+Only your family can open the sheet. The website only ever sees the number of pans per day, never names or phone numbers.
+
+### Set it up (one time, about 10 minutes)
+
+Do this on a computer, signed in to the Google account that should own the orders.
+
+1. Go to https://sheets.new to make a new sheet. Name it `Ruby's orders`.
+2. Click **Extensions > Apps Script**. A code editor opens in a new tab.
+3. Delete everything in the editor.
+4. Open https://github.com/cmpuuri/rubys-rise-and-shine/blob/main/apps-script/Code.gs, click the **Copy raw file** button, and paste it into the editor.
+5. Click the **Save** icon.
+6. In the toolbar, pick **setup** from the function list, then click **Run**.
+7. Google asks for permission. Click **Review permissions**, pick your account, click **Advanced**, then **Go to (unsafe)**. It says "unsafe" only because you wrote the script yourself and Google has not reviewed it. Click **Allow**.
+8. Go back to the sheet tab. A tab named **Orders** now has the column headings.
+9. Back in the editor, click **Deploy > New deployment**.
+10. Click the gear next to "Select type" and pick **Web app**.
+11. Set **Execute as: Me** and **Who has access: Anyone**. Click **Deploy**.
+12. Copy the **Web app URL**. It ends in `/exec`.
+13. On GitHub, edit `site.config.json` and paste the link between the quote marks: `"ordersSheetUrl": "https://script.google.com/macros/s/.../exec"`. Commit.
+14. After one minute, place a test order. It should appear as a new row in the **Orders** tab, and the email should arrive as usual.
+
+"Who has access: Anyone" lets the website reach the script. It does not share the sheet. Nobody can open the sheet unless you share it.
+
+### Day-to-day use
+
+- **A customer cancels:** in the **Status** column of that order, pick `Cancelled`. Those pans become free again within a minute.
+- **Close a day early** (a trip, a busy week): add a row by hand with the **Bake date** (for example `2026-11-04`) and **Pans** set to `4`. Type `CLOSED` as the name.
+- **Mark an order paid:** type anything in the **Paid** column. The website ignores this column.
+- **Do not** rename the Orders tab or move its columns. Sorting and filtering are fine.
+- Old bake days stay in the sheet as a record. They do not affect future days.
+
+### If something goes wrong
+
+- If the sheet cannot be reached, the website still takes the order and emails it. The email subject ends in **(NOT IN SHEET)**. Add that order to the sheet by hand.
+- If you change the bake days or `pansPerBake`, the script picks up the change within 5 minutes.
+- **To update the script later:** paste the new code, click **Save**, then **Deploy > Manage deployments**, the pencil icon, **Version: New version**, and **Deploy**. The link stays the same.
 
 ---
 
@@ -146,8 +190,9 @@ Ruby is 10. Keep it this way:
 |---|---|
 | `index.html` | The page. Words that rarely change. |
 | `site.config.json` | Words and numbers that change often. Read by the page when it opens. |
+| `apps-script/Code.gs` | The order sheet script. Lives in Google, not on the website. Not deployed. |
 | `css/site.css` | Colours, fonts, layout. Brand colours are at the top. |
-| `js/site.js` | Builds the menu and form from the config, sends orders, shows the ticket. Phase 2 hook: `onOrderSubmitted(order)`. |
+| `js/site.js` | Builds the menu and form from the config, marks full days, saves orders to the sheet, emails them, shows the ticket. Hook for later work: `onOrderSubmitted(order)`. |
 | `img/` | Logo, share image, icons. |
 | `print/` | QR card and sticker for printing. |
 | `vercel.json` | Security headers, clean URLs, `www` to apex redirect. |
@@ -167,7 +212,7 @@ The spec left these choices open, or two parts of it disagreed. Each choice is t
 3. **Three hero pills, not four.** The spec asks for three pills from the config (bake days, pickup or dropoff, price). The prototype also had "Organic flour". It was dropped, because the ingredients strip says it with more detail.
 4. **Flavor subtitles in the order form** ("Olive oil and flaky salt", "Roasted garlic and rosemary") are kept from the prototype in `js/site.js`, because the config has no field for them. A new flavor shows the pan size there instead.
 5. **"Coming soon" card** shows the name and note from the config. The prototype's "Spring 2027" label was dropped, because the config has no field for it.
-6. **"Bake days" box** used to say "If a day is full, the form will tell you." The form cannot count pans yet (that is phase 2), so it now says "If a day is full, Ruby will text you." It also reads "up to 4 pans per bake" from `pansPerBake`, where the prototype said "3 to 4".
+6. **"Bake days" box** says "If a day is full, the form will tell you." when the order sheet is on, and "If a day is full, Ruby will text you." when it is off. It also reads "up to 4 pans per bake" from `pansPerBake`, where the prototype said "3 to 4".
 7. **"Softball families" box** keeps the prototype words (Friday, Thursday) in `index.html`, with a `TODO(owner)` note.
 8. **Notes field placeholder** no longer shows a sample street address. It says "Or your address for a dropoff."
 9. **Confirmation panel** no longer has the prototype's "Nothing was sent yet" note, because orders are now sent.
@@ -180,5 +225,7 @@ The spec left these choices open, or two parts of it disagreed. Each choice is t
 16. **The submit button starts disabled** and turns on when the form is ready. This stops a very early press from putting the name and phone in the web address.
 17. **No JSON-LD.** It was optional.
 18. **Olive oil brand.** The spec mentions "Terra Delyssa", but `site.config.json` does not. The config was not changed. TODO(owner): to name the brand, add it to the olive oil `"name"` or `"note"` in `site.config.json`.
-19. **Changing the form provider** also needs an edit to the `Content-Security-Policy` line in `vercel.json`, which only allows `api.web3forms.com`.
+19. **Changing the form provider** also needs an edit to the `Content-Security-Policy` line in `vercel.json`, which only allows `api.web3forms.com` and Google Apps Script.
 20. **Photo of Ruby in About.** The family chose to add it (October 2026). It is cropped, saved as `img/ruby.webp` and `img/ruby@2x.webp` with no location data, and loads only when a visitor scrolls near it. The share image (`og-image.png`) stays logo-only, as the spec asks.
+21. **Order sheet = Google Sheet + Apps Script.** It is free, has no server to maintain, and the family already uses Google. The script checks capacity again, under a lock, at the moment of saving, so two people cannot both book the last pan. The email still goes out for every order as the backup record. Anyone could send fake orders to the script to fill a day, as they could by email before. If that ever happens, mark those rows `Cancelled`.
+22. **Pans per bake comes from `site.config.json`**, which the script reads from the live site, so there is one number to change. The sheet has no settings tab.

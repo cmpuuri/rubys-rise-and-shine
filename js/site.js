@@ -12,6 +12,7 @@
   var FLAVOR_HINTS = { plain: 'Olive oil and flaky salt', garlic: 'Roasted garlic and rosemary' };
 
   var cfg, qty = 1, loadedAt = Date.now(), sending = false;
+  var avail = null; // pans booked per bake day, from the order sheet (null until loaded, or if there is no sheet)
   var $ = function(id){ return document.getElementById(id); };
 
   // Google Fonts start as media="print" so they never block the first paint. Switch them on here.
@@ -136,11 +137,13 @@
     });
 
     var bake = $('bakeDay');
-    nextBakeDays().forEach(function(d, i){
-      var o = el('option', null, d.long + (i === 0 ? ' (next bake)' : ''));
+    nextBakeDays().forEach(function(d){
+      var o = el('option', null, d.long);
       o.value = d.iso; o.setAttribute('data-short', d.short); o.setAttribute('data-long', d.long);
       bake.appendChild(o);
     });
+    labelBakeDays();
+    bake.addEventListener('change', function(){ renderQty(); });
 
     var drop = $('dropLoc');
     cfg.dropoffOptions.forEach(function(t){ drop.appendChild(el('option', null, t)); });
@@ -149,7 +152,8 @@
     var form = $('orderForm');
     $('qtyMinus').addEventListener('click', function(){ if (qty > 1) { qty--; renderQty(); } });
     $('qtyPlus').addEventListener('click', function(){
-      if (qty < cfg.maxPansPerOrder) { qty++; renderQty(); }
+      if (qty < maxQty()) { qty++; renderQty(); }
+      else if (maxQty() < cfg.maxPansPerOrder) showErr('Only ' + maxQty() + ' ' + (maxQty() === 1 ? 'pan is' : 'pans are') + ' left for that bake day. Pick another day for more.');
       else showErr('Max ' + cfg.maxPansPerOrder + ' pans per order for now. Want more? Add a note and Ruby will see what she can do.');
     });
     form.querySelectorAll('input[name=method]').forEach(function(r){
@@ -162,13 +166,61 @@
     $('againBtn').addEventListener('click', resetForm);
     renderQty();
     $('submitBtn').disabled = false; // stays disabled in the HTML until the form is ready
+    if (cfg.ordersSheetUrl) { $('fullNote').textContent = 'If a day is full, the form will tell you.'; loadAvailability(); }
   }
 
   function renderQty(){
+    qty = Math.max(1, Math.min(qty, maxQty()));
     $('qtyOut').value = qty;
     $('total').textContent = money(qty * cfg.price);
     $('qtyMinus').disabled = qty <= 1;
-    if (qty < cfg.maxPansPerOrder) clearErr();
+    if (qty < maxQty()) clearErr();
+  }
+
+  /* ---------- full bake days (order sheet) ---------- */
+
+  function pansLeft(iso){
+    if (!avail) return Infinity;
+    return Math.max(0, cfg.pansPerBake - (avail.booked[iso] || 0));
+  }
+  function maxQty(){
+    var opt = $('bakeDay').options[$('bakeDay').selectedIndex];
+    return Math.max(1, Math.min(cfg.maxPansPerOrder, opt ? pansLeft(opt.value) : cfg.maxPansPerOrder));
+  }
+
+  // Marks full days "(full)" and unpickable, and the first open day "(next bake)".
+  function labelBakeDays(){
+    var bake = $('bakeDay'), firstOpen = null;
+    if (!bake.options.length) return;
+    Array.prototype.forEach.call(bake.options, function(o){
+      var left = pansLeft(o.value), full = left <= 0, note = '';
+      if (full) note = ' (full)';
+      else if (!firstOpen) { firstOpen = o; note = ' (next bake)'; }
+      if (!full && left < cfg.maxPansPerOrder) note += ' - only ' + left + ' left';
+      o.textContent = o.getAttribute('data-long') + note;
+      o.disabled = full;
+    });
+    if (!firstOpen) {
+      showErr('Every upcoming bake day is full. Check back soon, or text Ruby to get on the list.');
+      $('submitBtn').disabled = true;
+      return;
+    }
+    if (bake.options[bake.selectedIndex].disabled) bake.value = firstOpen.value;
+    $('submitBtn').disabled = sending;
+    renderQty();
+  }
+
+  function loadAvailability(){
+    timedFetch(cfg.ordersSheetUrl, {}, 8000)
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if (j && j.ok && j.booked) { avail = { booked: j.booked }; labelBakeDays(); } })
+      .catch(function(){ /* sheet unreachable: every day stays open, and the email still arrives */ });
+  }
+
+  function timedFetch(url, opts, ms){
+    var ctl = window.AbortController ? new AbortController() : null;
+    if (ctl) { opts.signal = ctl.signal; setTimeout(function(){ ctl.abort(); }, ms); }
+    return fetch(url, opts);
   }
   function showErr(m){ $('formErr').textContent = m; $('formErr').hidden = false; }
   function clearErr(){ $('formErr').hidden = true; }
@@ -245,6 +297,13 @@
       onOrderSubmitted(o);
     }, function(err){
       setSending(false);
+      if (err && err.full) {
+        var left = pansLeft(o.bakeDate);
+        showErr(left > 0
+          ? 'Someone just ordered first. Only ' + left + ' ' + (left === 1 ? 'pan is' : 'pans are') + ' left for that day, so your order is now ' + left + '. Press the button again, or pick another day.'
+          : 'Sorry, that bake day just filled up. Pick another day and press the button again.');
+        return;
+      }
       showErr((err && err.message ? err.message + ' ' : '') + 'Your order did not go through online.');
       $('fallbackTicket').textContent = text;
       $('fallbackSms').href = smsHref(text);
@@ -252,13 +311,41 @@
     });
   }
 
+  // 1. Save the order in the sheet (this is what keeps a day from going over).
+  // 2. Email it. If the sheet could not be reached, the email says so, so the order is never lost.
   function sendOrder(o, text){
     if (!cfg.orderAccessKey || cfg.orderAccessKey === 'PLACEHOLDER') {
       return Promise.reject(new Error('Online ordering is not switched on yet.'));
     }
+    return logToSheet(o).then(function(logged){ return emailOrder(o, text, logged); });
+  }
+
+  // Resolves true (saved), false (no sheet, or it could not be reached). Rejects with err.full if the day is full.
+  function logToSheet(o){
+    if (!cfg.ordersSheetUrl) return Promise.resolve(false);
+    var row = { id: o.id, bakeDate: o.bakeDate, bakeDayLong: o.bakeDayLong, flavor: o.flavor, qty: o.qty,
+                name: o.name, phone: o.phone, method: o.method, where: o.where, notes: o.notes };
+    // text/plain keeps this a "simple" request, which Google Apps Script accepts from other sites.
+    return timedFetch(cfg.ordersSheetUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(row) }, 15000)
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.ok) {
+          if (avail) avail.booked[o.bakeDate] = (avail.booked[o.bakeDate] || 0) + o.qty;
+          return true;
+        }
+        if (j && j.reason === 'full') {
+          avail = { booked: j.booked || {} }; labelBakeDays();
+          var e = new Error('full'); e.full = true; throw e;
+        }
+        return false;
+      }, function(){ return false; });
+  }
+
+  function emailOrder(o, text, logged){
     var payload = {
       access_key: cfg.orderAccessKey,
-      subject: "Ruby's order " + o.id + ': ' + o.qty + ' x ' + o.flavor + ' for ' + o.bakeDayShort,
+      subject: "Ruby's order " + o.id + ': ' + o.qty + ' x ' + o.flavor + ' for ' + o.bakeDayShort +
+               (cfg.ordersSheetUrl && !logged ? ' (NOT IN SHEET)' : ''),
       from_name: cfg.businessName + ' website',
       message: text,
       order_id: o.id,
@@ -271,7 +358,8 @@
       get_it_by: o.method,
       where: o.where,
       notes: o.notes || '(none)',
-      total: money(o.total)
+      total: money(o.total),
+      order_sheet: !cfg.ordersSheetUrl ? 'not set up' : logged ? 'saved' : 'NOT saved. Add this order to the sheet by hand.'
     };
     return fetch(cfg.orderEndpoint, {
       method: 'POST',
@@ -319,7 +407,7 @@
 
   function resetForm(){
     var form = $('orderForm');
-    form.reset(); qty = 1; renderQty();
+    form.reset(); qty = 1; labelBakeDays();
     $('dropWhere').hidden = true; $('fallback').hidden = true; clearErr();
     fieldErr('name', ''); fieldErr('phone', '');
     form.hidden = false; $('sideInfo').hidden = false; $('confirm').hidden = true;
@@ -328,8 +416,8 @@
   }
 
   /* ---------- PHASE 2 EXTENSION POINT ----------
-     Runs after an order is delivered. Add later: count pans per bake day,
-     text Ruby (for example Twilio, through a small serverless function), or log to a Google Sheet.
+     Runs after an order is delivered. The order sheet is done (see logToSheet).
+     Still to add later: text Ruby (for example Twilio, through a small serverless function).
      Do not put private keys in this file: everything here is public. */
   function onOrderSubmitted(order){ /* eslint-disable-line no-unused-vars */ }
 
