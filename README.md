@@ -136,6 +136,7 @@ Ruby is 10. Keep it this way:
 - The order form only asks for what is needed: name, phone, and optional notes.
 - No analytics, no ad trackers, no cookie banners, no chat widgets.
 - The pickup address is never on the site. Ruby texts it to the customer.
+- Photos go on the site only when the family chooses them. Phone photos can hold the GPS location of your house: before you add one, ask for a web-size copy with the location data removed (the photo in `img/ruby.webp` has none). Keep house numbers, street signs, school logos, and team names out of the picture.
 
 ---
 
@@ -180,3 +181,4 @@ The spec left these choices open, or two parts of it disagreed. Each choice is t
 17. **No JSON-LD.** It was optional.
 18. **Olive oil brand.** The spec mentions "Terra Delyssa", but `site.config.json` does not. The config was not changed. TODO(owner): to name the brand, add it to the olive oil `"name"` or `"note"` in `site.config.json`.
 19. **Changing the form provider** also needs an edit to the `Content-Security-Policy` line in `vercel.json`, which only allows `api.web3forms.com`.
+20. **Photo of Ruby in About.** The family chose to add it (October 2026). It is cropped, saved as `img/ruby.webp` and `img/ruby@2x.webp` with no location data, and loads only when a visitor scrolls near it. The share image (`og-image.png`) stays logo-only, as the spec asks.
