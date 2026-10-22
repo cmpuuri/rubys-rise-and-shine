@@ -10,7 +10,7 @@
     { "id": "plain", "name": "Plain", "desc": "The original. Organic unbleached flour, reverse osmosis water, unrefined mineral salt, cold-pressed extra virgin olive oil, and a long sourdough rise. Finished with Maldon flakes. Crisp bottom, pillowy middle." },
     { "id": "garlic", "name": "Garlic", "desc": "Same dough and the same good ingredients, plus roasted garlic and fresh rosemary pressed into the dimples. The one people ask for twice." }
   ],
-  "comingSoon": [ { "name": "Keychains", "note": "Handmade by Ruby for teammates. Phase 2." } ],
+  "comingSoon": [],
   "ingredients": [
     { "name": "Organic unbleached flour", "note": "No bleach, no bromate. Just wheat." },
     { "name": "Filtered reverse osmosis water", "note": "Clean water makes a cleaner rise." },
