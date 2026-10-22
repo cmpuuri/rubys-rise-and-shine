@@ -213,3 +213,4 @@ section{scroll-margin-top:72px}
 /* How it works: steps 1, 2, 3 in one row on tablets and up, stacked on phones */
 .steps{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media (max-width:640px){ .steps{grid-template-columns:1fr} }
+.eyebrow{line-height:1.15}
